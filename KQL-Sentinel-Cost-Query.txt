@@ -1,0 +1,10 @@
+let fromDateTime=datetime('June 01 2024');
+let toDateTime=datetime('September 01 2024');
+Usage
+| where IsBillable == true
+| where TimeGenerated between ( fromDateTime .. toDateTime )
+| where DataType <> "AzureDiagnostics"
+| summarize size = sum(Quantity)/1024, sizeOther = sumif(Quantity,(DataType !contains "_CL" and TimeGenerated between ( fromDateTime .. toDateTime )))/1024 by DataType
+| project ['Table Name'] = DataType, ['Table Size'] = size, ['Estimated cost'] = size*4.3
+| order by ['Estimated cost'] desc
+| take 20
